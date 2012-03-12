@@ -58,7 +58,7 @@ class Node
       {}
   }
 
-  function Tail(): Node
+  function SkipHead(): Node
     requires Valid();
     reads this;
   {
@@ -124,7 +124,7 @@ class Node
     }
   }
 
-  static method Contains(d: int, l: Node) returns (r: bool)
+  static method ContainsElement(d: int, l: Node) returns (r: bool)
     requires l != null && l.Valid();
     ensures r == (l.Find(d) != {});
     decreases l.Len();
@@ -139,7 +139,7 @@ class Node
     }
     else
     {
-      r := Contains(d, l.next);
+      r := ContainsElement(d, l.next);
       assert r == (l.next.Find(d) != {});
       assert r == (l.next.FindHelper(d, 0) != {});
       assumed r == (l.next.FindHelper(d, 1) != {}) as a0;
@@ -153,7 +153,7 @@ class Node
     r := l.data;
   }
 
-  static method Last(l: Node) returns (r: int)
+  static method LastElement(l: Node) returns (r: int)
     requires l != null && l.Valid();
     ensures r == Get(l, l.Len() - 1);
     decreases l.Len();
@@ -164,13 +164,13 @@ class Node
     }
     else
     {
-      r := Last(l.next);
+      r := LastElement(l.next);
     }
   }
 
-  static method SkipHead(l: Node) returns (r: Node)
+  static method Tail(l: Node) returns (r: Node)
     requires l != null && l.Valid();
-    ensures r == l.Tail();
+    ensures r == l.SkipHead();
   {
     r := l.next;
   }
@@ -179,7 +179,7 @@ class Node
     requires l != null && l.Valid();
     ensures r != null && fresh(r) && r.Valid();
     ensures Get(r, 0) == d;
-    ensures r.Tail() == l;
+    ensures r.SkipHead() == l;
     ensures r.Len() == l.Len() + 1;
   {
     r := new Node.Init(d);
@@ -206,7 +206,7 @@ class Node
     }
   }
 
-  static method Concat(l1: Node, l2: Node)
+  static method Concatenate(l1: Node, l2: Node)
     requires l1 != null && l2 != null && l1.Valid() && l2.Valid();
     requires l1.Repr() !! l2.Repr();
     modifies l1.Repr();
@@ -224,7 +224,7 @@ class Node
     }
     else
     {
-      Concat(l1.next, l2);
+      Concatenate(l1.next, l2);
     }
   }
 
@@ -247,7 +247,7 @@ class Node
     r := c;
   }
 
-  static method Reverse(l: Node) returns (r: Node)
+  static method ReverseInPlace(l: Node) returns (r: Node)
     requires l != null && l.Valid();
     modifies l.Repr();
     ensures r != null && r.Valid();
